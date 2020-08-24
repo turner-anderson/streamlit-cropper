@@ -3,7 +3,7 @@ import streamlit.components.v1 as components
 from PIL import Image
 import numpy as np
 
-_RELEASE = False
+_RELEASE = True
 
 if not _RELEASE:
     _component_func = components.declare_component(
