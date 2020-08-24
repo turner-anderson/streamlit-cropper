@@ -12,6 +12,7 @@ interface PythonArgs {
     realtimeUpdate: boolean
     boxColor: string
     imageData: Uint8ClampedArray
+    lockAspect: boolean
 }
 
 
@@ -46,11 +47,11 @@ const StreamlitCropper = (props: ComponentProps) => {
      * Initialize canvas on mount and add a rectangle
      */
     useEffect  (() => {
-        const {rectTop, rectLeft, rectWidth, rectHeight, boxColor}: PythonArgs = props.args
+        const {rectTop, rectLeft, rectWidth, rectHeight, boxColor, lockAspect}: PythonArgs = props.args
         const canvas = new fabric.Canvas('c', {
             enableRetinaScaling: false,
             backgroundImage: dataUri,
-            uniScaleTransform: true
+            uniScaleTransform: lockAspect
         })
 
         var rect = new fabric.Rect({
