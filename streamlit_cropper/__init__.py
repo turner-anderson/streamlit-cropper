@@ -117,7 +117,6 @@ def st_cropper(img: Image, realtime_update: bool=True, box_color: str='blue', as
     lockAspect = False
     if aspect_ratio:
         lockAspect = True
-    st.write(lockAspect)
 
     # Translates image to a list for passing to Javascript
     imageData = np.array(img.convert("RGBA")).flatten().tolist()
