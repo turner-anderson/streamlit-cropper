@@ -62,7 +62,7 @@ def _recommended_box(img: Image, aspect_ratio: tuple=None) -> dict:
         top = box[1]
         width = box[2] - box[0]
         height = box[3] - box[1]
-    return {'left' : left, 'top' : top, 'width' : width, 'height' : height}
+    return {'left' : int(left), 'top' : int(top), 'width' : int(width), 'height' : int(height)}
 
 
 def st_cropper(img: Image, realtime_update: bool=True, box_color: str='blue', aspect_ratio: tuple=None,
