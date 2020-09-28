@@ -13,7 +13,7 @@ def readme() -> str:
 
 setuptools.setup(
     name="streamlit-cropper",
-    version="0.1.2",
+    version="0.1.3",
     author="Turner Anderson",
     author_email="andersontur11@gmail.com",
     description="A simple image cropper for Streamlit",
