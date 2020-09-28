@@ -66,7 +66,7 @@ def _recommended_box(img: Image, aspect_ratio: tuple=None) -> dict:
 
 
 def st_cropper(img: Image, realtime_update: bool=True, box_color: str='blue', aspect_ratio: tuple=None,
-               box_algorithm=None, key=None) -> Image:
+               return_type: str='image', box_algorithm=None,  key=None) -> Image:
     """Create a new instance of "st_cropper".
 
     Parameters
@@ -87,6 +87,10 @@ def st_cropper(img: Image, realtime_update: bool=True, box_color: str='blue', as
         and return a dictionary with keys: 'left', 'top', 'width', 'height'. Note that
         if you use a box_algorithm with an aspect_ratio, you will need to decide how to
         handle the aspect_ratio yourself
+    return_type: str
+        The return type that you would like. The default, 'image', returns the cropped
+        image, while 'box' returns a dictionary identifying the box by its
+        left and top coordinates as well as its width and height.
     key: str or None
         An optional key that uniquely identifies this component. If this is
         None, and the component's arguments are changed, the component will
@@ -98,6 +102,10 @@ def st_cropper(img: Image, realtime_update: bool=True, box_color: str='blue', as
     The cropped image in PIL.Image format
     """
 
+    # Ensure that the return type is in the list of supported return types
+    supported_types = ('image', 'box')
+    if return_type.lower() not in supported_types:
+        raise ValueError(f"{return_type} is not a supported value for return_type, try one of {supported_types}")
     # Load the image and resize to be no wider than the streamlit widget size 
     img = _resize_img(img)
 
@@ -137,8 +145,13 @@ def st_cropper(img: Image, realtime_update: bool=True, box_color: str='blue', as
         rect = component_value['coords']
     else:
         rect = box
-    cropped_img = img.crop((rect['left'], rect['top'], rect['width'] + rect['left'], rect['height'] + rect['top']))
-    return cropped_img
+
+    # Return the value desired by the return_type
+    if return_type.lower() == 'image':
+        cropped_img = img.crop((rect['left'], rect['top'], rect['width'] + rect['left'], rect['height'] + rect['top']))
+        return cropped_img
+    elif return_type.lower() == 'box':
+        return rect
 
 
 # Add some test code to play with the component while it's in development.
