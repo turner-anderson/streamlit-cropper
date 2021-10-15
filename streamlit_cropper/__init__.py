@@ -23,7 +23,7 @@ def _resize_img(img: Image, max_height: int=700, max_width: int=700) -> Image:
     if img.height > max_height:
         ratio = max_height / img.height
         img = img.resize((int(img.width * ratio), int(img.height * ratio)))
-    if img.width > max_width:     
+    if img.width > max_width:
         ratio = max_width / img.width
         img = img.resize((int(img.width * ratio), int(img.height * ratio)))
     return img
@@ -38,7 +38,7 @@ def _recommended_box(img: Image, aspect_ratio: tuple=None) -> dict:
     # If an aspect_ratio is provided, then fix the aspect
     if aspect_ratio:
         ideal_aspect = aspect_ratio[0] / aspect_ratio[1]
-        height = (box[3] - box[1]) 
+        height = (box[3] - box[1])
         current_aspect = width / height
         if current_aspect > ideal_aspect:
             new_width = int(ideal_aspect * height)
@@ -106,8 +106,11 @@ def st_cropper(img: Image, realtime_update: bool=True, box_color: str='blue', as
     supported_types = ('image', 'box')
     if return_type.lower() not in supported_types:
         raise ValueError(f"{return_type} is not a supported value for return_type, try one of {supported_types}")
-    # Load the image and resize to be no wider than the streamlit widget size 
-    img = _resize_img(img)
+    # Load the image and resize to be no wider than the streamlit widget size
+    resized_img = _resize_img(img)
+    resized_ratio_w = img.width / resized_img.width
+    resized_ratio_h = img.height / resized_img.height
+    img = resized_img
 
     # Find a default box
     if not box_algorithm:
@@ -151,6 +154,11 @@ def st_cropper(img: Image, realtime_update: bool=True, box_color: str='blue', as
         cropped_img = img.crop((rect['left'], rect['top'], rect['width'] + rect['left'], rect['height'] + rect['top']))
         return cropped_img
     elif return_type.lower() == 'box':
+        # Return scaled box according to resize ratio
+        rect['left'] = int(rect['left'] * resized_ratio_w)
+        rect['width'] = int(rect['width'] * resized_ratio_w)
+        rect['top'] = int(rect['top'] * resized_ratio_h)
+        rect['height'] = int(rect['height'] * resized_ratio_h)
         return rect
 
 
@@ -167,24 +175,52 @@ if not _RELEASE:
     box_color = st.sidebar.color_picker(label="Box Color", value='#0000FF')
 
     aspect_choice = st.sidebar.radio(label="Aspect Ratio", options=["1:1", "16:9", "4:3", "2:3", "Free"])
-    aspect_dict = {"1:1": (1,1),
-                   "16:9": (16,9),
-                   "4:3": (4,3),
-                   "2:3": (2,3),
-                   "Free": None}
+    aspect_dict = {
+        "1:1": (1, 1),
+        "16:9": (16, 9),
+        "4:3": (4, 3),
+        "2:3": (2, 3),
+        "Free": None
+    }
     aspect_ratio = aspect_dict[aspect_choice]
+
+    return_type_choice = st.sidebar.radio(label="Return type", options=["Cropped image", "Rect coords"])
+    return_type_dict = {
+        "Cropped image": "image",
+        "Rect coords": "box"
+    }
+    return_type = return_type_dict[return_type_choice]
 
     if img_file:
         img = Image.open(img_file)
-        if not realtime_update:
-            st.write("Double click to save crop")
-        # Get a cropped image from the frontend
-        cropped_img = st_cropper(img, realtime_update=realtime_update, box_color=box_color,
-                                 aspect_ratio=aspect_ratio)
-        
-        # Manipulate cropped image at will
-        st.write("Preview")
-        _ = cropped_img.thumbnail((150,150))
-        st.image(cropped_img)
 
-    
+        if return_type == 'box':
+            rect = st_cropper(
+                img,
+                realtime_update=True,
+                box_color=box_color,
+                aspect_ratio=aspect_ratio,
+                return_type=return_type
+            )
+            raw_image = np.asarray(img).astype('uint8')
+            left, top, width, height = tuple(map(int, rect.values()))
+            st.write(rect)
+            masked_image = np.zeros(raw_image.shape, dtype='uint8')
+            masked_image[top:top + height, left:left + width] = raw_image[top:top + height, left:left + width]
+            st.image(Image.fromarray(masked_image), caption='masked image')
+        else:
+            if not realtime_update:
+                st.write("Double click to save crop")
+            # Get a cropped image from the frontend
+            cropped_img = st_cropper(
+                img,
+                realtime_update=realtime_update,
+                box_color=box_color,
+                aspect_ratio=aspect_ratio,
+                return_type=return_type
+            )
+
+            # Manipulate cropped image at will
+            st.write("Preview")
+            _ = cropped_img.thumbnail((150, 150))
+            st.image(cropped_img)
