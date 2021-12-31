@@ -13,7 +13,7 @@ def readme() -> str:
 
 setuptools.setup(
     name="streamlit-cropper",
-    version="0.1.3",
+    version="0.2.0",
     author="Turner Anderson",
     author_email="andersontur11@gmail.com",
     description="A simple image cropper for Streamlit",
@@ -25,8 +25,8 @@ setuptools.setup(
     classifiers=[],
     python_requires=">=3.6",
     install_requires=[
-        "streamlit >= 0.63",
-        "Pillow >= 7.1.2",
-        "numpy >= 1.18.4"
+        "streamlit >= 1.3.1",
+        "Pillow >= 8.4.0",
+        "numpy >= 1.21.5"
     ],
 )

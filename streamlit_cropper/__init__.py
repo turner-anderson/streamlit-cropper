@@ -110,7 +110,7 @@ def st_cropper(img: Image, realtime_update: bool=True, box_color: str='blue', as
     resized_img = _resize_img(img)
     resized_ratio_w = img.width / resized_img.width
     resized_ratio_h = img.height / resized_img.height
-    img = resized_img
+    orig_img, img = img, resized_img
 
     # Find a default box
     if not box_algorithm:
@@ -149,16 +149,17 @@ def st_cropper(img: Image, realtime_update: bool=True, box_color: str='blue', as
     else:
         rect = box
 
+    # Scale box according to the resize ratio, but make sure new box does not exceed original bounds
+    rect['left'] = max(0, int(rect['left'] * resized_ratio_w))
+    rect['top'] = max(0, int(rect['top'] * resized_ratio_h))
+    rect['width'] = min(orig_img.size[0] - rect['left'], int(rect['width'] * resized_ratio_w))
+    rect['height'] = min(orig_img.size[1] - rect['top'], int(rect['height'] * resized_ratio_h))
+
     # Return the value desired by the return_type
     if return_type.lower() == 'image':
-        cropped_img = img.crop((rect['left'], rect['top'], rect['width'] + rect['left'], rect['height'] + rect['top']))
+        cropped_img = orig_img.crop((rect['left'], rect['top'], rect['width'] + rect['left'], rect['height'] + rect['top']))
         return cropped_img
     elif return_type.lower() == 'box':
-        # Return scaled box according to resize ratio
-        rect['left'] = int(rect['left'] * resized_ratio_w)
-        rect['width'] = int(rect['width'] * resized_ratio_w)
-        rect['top'] = int(rect['top'] * resized_ratio_h)
-        rect['height'] = int(rect['height'] * resized_ratio_h)
         return rect
 
 
