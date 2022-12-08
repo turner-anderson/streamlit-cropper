@@ -67,7 +67,7 @@ def _recommended_box(img: Image, aspect_ratio: tuple = None) -> dict:
 
 
 def st_cropper(img_file: Image, realtime_update: bool = True, box_color: str = 'blue', aspect_ratio: tuple = None,
-               return_type: str = 'image', box_algorithm=None, key=None) -> Image:
+               return_type: str = 'image', box_algorithm=None, key=None):
     """Create a new instance of "st_cropper".
 
     Parameters
