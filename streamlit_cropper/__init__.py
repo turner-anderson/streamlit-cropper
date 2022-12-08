@@ -66,7 +66,7 @@ def _recommended_box(img: Image, aspect_ratio: tuple = None) -> dict:
     return {'left': int(left), 'top': int(top), 'width': int(width), 'height': int(height)}
 
 
-def st_cropper(img: Image, realtime_update: bool = True, box_color: str = 'blue', aspect_ratio: tuple = None,
+def st_cropper(img_file: Image, realtime_update: bool = True, box_color: str = 'blue', aspect_ratio: tuple = None,
                return_type: str = 'image', box_algorithm=None, key=None) -> Image:
     """Create a new instance of "st_cropper".
 
@@ -115,24 +115,26 @@ def st_cropper(img: Image, realtime_update: bool = True, box_color: str = 'blue'
 
     # Find a default box
     if not box_algorithm:
-        box = _recommended_box(img, aspect_ratio=aspect_ratio)
+        box = _recommended_box(img_file, aspect_ratio=aspect_ratio)
     else:
-        box = box_algorithm(img, aspect_ratio=aspect_ratio)
+        box = box_algorithm(img_file, aspect_ratio=aspect_ratio)
 
-    rectLeft = box['left']
-    rectTop = box['top']
-    rectWidth = box['width']
-    rectHeight = box['height']
+    rect_left = box['left']
+    rect_top = box['top']
+    rect_width = box['width']
+    rect_height = box['height']
+
+    # img = _resize_img(img)
 
     # Get arguments to send to frontend
-    canvasWidth = img.width
-    canvasHeight = img.height
-    lockAspect = False
+    canvas_width = img_file.width
+    canvas_height = img_file.height
+    lock_aspect = False
     if aspect_ratio:
-        lockAspect = True
+        lock_aspect = True
 
     # Translates image to a list for passing to Javascript
-    imageData = np.array(img.convert("RGBA")).flatten().tolist()
+    image_data = np.array(img_file.convert("RGBA")).flatten().tolist()
 
     # Call through to our private component function. Arguments we pass here
     # will be sent to the frontend, where they'll be available in an "args"
@@ -141,10 +143,10 @@ def st_cropper(img: Image, realtime_update: bool = True, box_color: str = 'blue'
     # Defaults to a box whose vertices are at 20% and 80% of height and width.
     # The _recommended_box function could be replaced with some kind of image
     # detection algorith if it suits your needs.
-    component_value = _component_func(canvasWidth=canvasWidth, canvasHeight=canvasHeight,
+    component_value = _component_func(canvasWidth=canvas_width, canvasHeight=canvas_height,
                                       realtimeUpdate=realtime_update,
-                                      rectHeight=rectHeight, rectWidth=rectWidth, rectLeft=rectLeft, rectTop=rectTop,
-                                      boxColor=box_color, imageData=imageData, lockAspect=not (lockAspect), key=key)
+                                      rectHeight=rect_height, rectWidth=rect_width, rectLeft=rect_left, rectTop=rect_top,
+                                      boxColor=box_color, imageData=image_data, lockAspect=not lock_aspect, key=key)
 
     # Return a cropped image using the box from the frontend
     if component_value:
@@ -160,7 +162,7 @@ def st_cropper(img: Image, realtime_update: bool = True, box_color: str = 'blue'
 
     # Return the value desired by the return_type
     if return_type.lower() == 'image':
-        cropped_img = orig_img.crop(
+        cropped_img = img_file.crop(
             (rect['left'], rect['top'], rect['width'] + rect['left'], rect['height'] + rect['top']))
         return cropped_img
     elif return_type.lower() == 'box':
@@ -202,7 +204,7 @@ if not _RELEASE:
 
         if return_type == 'box':
             rect = st_cropper(
-                img,
+                img_file=img,
                 realtime_update=True,
                 box_color=box_color,
                 aspect_ratio=aspect_ratio,
@@ -219,7 +221,7 @@ if not _RELEASE:
                 st.write("Double click to save crop")
             # Get a cropped image from the frontend
             cropped_img = st_cropper(
-                img,
+                img_file=img,
                 realtime_update=realtime_update,
                 box_color=box_color,
                 aspect_ratio=aspect_ratio,
