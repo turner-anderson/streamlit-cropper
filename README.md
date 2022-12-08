@@ -5,11 +5,13 @@ A streamlit custom component for easy image cropping
 ![](./img/demo.gif)
 
 ## Installation
+
 ```shell script
 pip install streamlit-cropper
 ```
 
 ## Example Usage
+
 ```python
 import streamlit as st
 from streamlit_cropper import st_cropper
@@ -46,7 +48,9 @@ if img_file:
 ```
 
 ## References
+
 - [streamlit-drawable-canvas](https://github.com/andfanilo/streamlit-drawable-canvas)
 
 ## Acknowledgments
+
 Big thanks to zoncrd and yanirs for their contributions

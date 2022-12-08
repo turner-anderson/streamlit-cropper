@@ -16,8 +16,8 @@ else:
     _component_func = components.declare_component("st_cropper", path=build_dir)
 
 
-def _resize_img(img: Image, max_height: int=700, max_width: int=700) -> Image:
-    # Resize the image to be a max of 700x700 by default, or whatever the user 
+def _resize_img(img: Image, max_height: int = 700, max_width: int = 700) -> Image:
+    # Resize the image to be a max of 700x700 by default, or whatever the user
     # provides. If streamlit has an attribute to expose the default width of a widget,
     # we should use that instead.
     if img.height > max_height:
@@ -28,7 +28,8 @@ def _resize_img(img: Image, max_height: int=700, max_width: int=700) -> Image:
         img = img.resize((int(img.width * ratio), int(img.height * ratio)))
     return img
 
-def _recommended_box(img: Image, aspect_ratio: tuple=None) -> dict:
+
+def _recommended_box(img: Image, aspect_ratio: tuple = None) -> dict:
     # Find a recommended box for the image (could be replaced with image detection)
     box = (img.width * 0.2, img.height * 0.2, img.width * 0.8, img.height * 0.8)
     box = [int(i) for i in box]
@@ -62,11 +63,11 @@ def _recommended_box(img: Image, aspect_ratio: tuple=None) -> dict:
         top = box[1]
         width = box[2] - box[0]
         height = box[3] - box[1]
-    return {'left' : int(left), 'top' : int(top), 'width' : int(width), 'height' : int(height)}
+    return {'left': int(left), 'top': int(top), 'width': int(width), 'height': int(height)}
 
 
-def st_cropper(img: Image, realtime_update: bool=True, box_color: str='blue', aspect_ratio: tuple=None,
-               return_type: str='image', box_algorithm=None,  key=None) -> Image:
+def st_cropper(img: Image, realtime_update: bool = True, box_color: str = 'blue', aspect_ratio: tuple = None,
+               return_type: str = 'image', box_algorithm=None, key=None) -> Image:
     """Create a new instance of "st_cropper".
 
     Parameters
@@ -77,7 +78,7 @@ def st_cropper(img: Image, realtime_update: bool=True, box_color: str='blue', as
         A boolean value to determine whether the cropper will update in realtime.
         If set to False, a double click is required to crop the image.
     box_color: string
-        The color of the cropper's bounding box. Defaults to blue, can accept 
+        The color of the cropper's bounding box. Defaults to blue, can accept
         other string colors recognized by fabric.js or hex colors in a format like
         '#ff003c'
     aspect_ratio: tuple
@@ -117,6 +118,7 @@ def st_cropper(img: Image, realtime_update: bool=True, box_color: str='blue', as
         box = _recommended_box(img, aspect_ratio=aspect_ratio)
     else:
         box = box_algorithm(img, aspect_ratio=aspect_ratio)
+
     rectLeft = box['left']
     rectTop = box['top']
     rectWidth = box['width']
@@ -136,12 +138,13 @@ def st_cropper(img: Image, realtime_update: bool=True, box_color: str='blue', as
     # will be sent to the frontend, where they'll be available in an "args"
     # dictionary.
     #
-    # Defaults to a box whose vertices are at 20% and 80% of height and width. 
+    # Defaults to a box whose vertices are at 20% and 80% of height and width.
     # The _recommended_box function could be replaced with some kind of image
     # detection algorith if it suits your needs.
-    component_value = _component_func(canvasWidth=canvasWidth, canvasHeight=canvasHeight, realtimeUpdate=realtime_update,
+    component_value = _component_func(canvasWidth=canvasWidth, canvasHeight=canvasHeight,
+                                      realtimeUpdate=realtime_update,
                                       rectHeight=rectHeight, rectWidth=rectWidth, rectLeft=rectLeft, rectTop=rectTop,
-                                      boxColor=box_color, imageData=imageData, lockAspect=not(lockAspect), key=key)
+                                      boxColor=box_color, imageData=imageData, lockAspect=not (lockAspect), key=key)
 
     # Return a cropped image using the box from the frontend
     if component_value:
@@ -157,7 +160,8 @@ def st_cropper(img: Image, realtime_update: bool=True, box_color: str='blue', as
 
     # Return the value desired by the return_type
     if return_type.lower() == 'image':
-        cropped_img = orig_img.crop((rect['left'], rect['top'], rect['width'] + rect['left'], rect['height'] + rect['top']))
+        cropped_img = orig_img.crop(
+            (rect['left'], rect['top'], rect['width'] + rect['left'], rect['height'] + rect['top']))
         return cropped_img
     elif return_type.lower() == 'box':
         return rect
@@ -168,6 +172,7 @@ def st_cropper(img: Image, realtime_update: bool=True, box_color: str='blue', as
 # app: `$ streamlit run my_component/__init__.py`
 if not _RELEASE:
     import streamlit as st
+
     st.set_option('deprecation.showfileUploaderEncoding', False)
     # Upload an image and set some options for demo purposes
     st.header("Cropper Testing")
