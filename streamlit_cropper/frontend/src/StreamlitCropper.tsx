@@ -40,6 +40,7 @@ const StreamlitCropper = (props: ComponentProps) => {
     var dataUri = invisCanvas.toDataURL()
     }
     else {
+        // eslint-disable-next-line
         var dataUri = ""
     }
     
@@ -70,6 +71,7 @@ const StreamlitCropper = (props: ComponentProps) => {
 
         setCanvas(canvas)
         Streamlit.setFrameHeight()
+        // eslint-disable-next-line
     }, [canvasHeight, canvasWidth]);
 
 
