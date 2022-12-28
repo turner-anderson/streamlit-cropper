@@ -119,7 +119,7 @@ def st_cropper(img_file: Image, realtime_update: bool = True, box_color: str = '
         resized_img = _resize_img(img_file)
         resized_ratio_w = img_file.width / resized_img.width
         resized_ratio_h = img_file.height / resized_img.height
-        img_file = resized_img
+        orig_file, img_file = img_file, resized_img
 
     # Find a default box
     if not box_algorithm:
@@ -164,13 +164,17 @@ def st_cropper(img_file: Image, realtime_update: bool = True, box_color: str = '
     if should_resize_image:
         rect['left'] = max(0, int(rect['left'] * resized_ratio_w))
         rect['top'] = max(0, int(rect['top'] * resized_ratio_h))
-        rect['width'] = min(img_file.size[0] - rect['left'], int(rect['width'] * resized_ratio_w))
-        rect['height'] = min(img_file.size[1] - rect['top'], int(rect['height'] * resized_ratio_h))
+        rect['width'] = min(orig_file.size[0] - rect['left'], int(rect['width'] * resized_ratio_w))
+        rect['height'] = min(orig_file.size[1] - rect['top'], int(rect['height'] * resized_ratio_h))
 
     # Return the value desired by the return_type
     if return_type.lower() == 'image':
-        cropped_img = img_file.crop(
-            (rect['left'], rect['top'], rect['width'] + rect['left'], rect['height'] + rect['top']))
+        if not should_resize_image:
+            cropped_img = img_file.crop(
+                (rect['left'], rect['top'], rect['width'] + rect['left'], rect['height'] + rect['top']))
+        else:
+            cropped_img = orig_file.crop(
+                (rect['left'], rect['top'], rect['width'] + rect['left'], rect['height'] + rect['top']))
         return cropped_img
     elif return_type.lower() == 'box':
         return rect
@@ -216,7 +220,7 @@ if not _RELEASE:
                 box_color=box_color,
                 aspect_ratio=aspect_ratio,
                 return_type=return_type
-            )
+                )
             raw_image = np.asarray(img).astype('uint8')
             left, top, width, height = tuple(map(int, rect.values()))
             st.write(rect)
