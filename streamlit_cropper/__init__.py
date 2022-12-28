@@ -116,6 +116,7 @@ def st_cropper(img_file: Image, realtime_update: bool = True, box_color: str = '
 
     # Load the image and resize to be no wider than the streamlit widget size
     if should_resize_image:
+        orig_size = img_file.size
         resized_img = _resize_img(img_file)
         resized_ratio_w = img_file.width / resized_img.width
         resized_ratio_h = img_file.height / resized_img.height
@@ -164,8 +165,8 @@ def st_cropper(img_file: Image, realtime_update: bool = True, box_color: str = '
     if should_resize_image:
         rect['left'] = max(0, int(rect['left'] * resized_ratio_w))
         rect['top'] = max(0, int(rect['top'] * resized_ratio_h))
-        rect['width'] = min(img_file.size[0] - rect['left'], int(rect['width'] * resized_ratio_w))
-        rect['height'] = min(img_file.size[1] - rect['top'], int(rect['height'] * resized_ratio_h))
+        rect['width'] = min(orig_size[0] - rect['left'], int(rect['width'] * resized_ratio_w))
+        rect['height'] = min(orig_size[1] - rect['top'], int(rect['height'] * resized_ratio_h))
 
     # Return the value desired by the return_type
     if return_type.lower() == 'image':
