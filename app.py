@@ -2,6 +2,7 @@ import streamlit as st
 import numpy as np
 from streamlit_cropper import st_cropper
 from PIL import Image
+
 st.set_option('deprecation.showfileUploaderEncoding', False)
 
 # Upload an image and set some options for demo purposes
@@ -30,7 +31,7 @@ return_type = return_type_dict[return_type_choice]
 if img_file:
     img = Image.open(img_file)
     if not realtime_update:
-            st.write("Double click to save crop")
+        st.write("Double click to save crop")
     if return_type == 'box':
         rect = st_cropper(
             img,
