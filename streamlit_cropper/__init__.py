@@ -1,6 +1,7 @@
 import os
 import streamlit.components.v1 as components
 from PIL import Image
+from typing import Optional
 import numpy as np
 
 _RELEASE = True
@@ -66,7 +67,7 @@ def _recommended_box(img: Image, aspect_ratio: tuple = None) -> dict:
     return {'left': int(left), 'top': int(top), 'width': int(width), 'height': int(height)}
 
 
-def st_cropper(img_file: Image, realtime_update: bool = True, box_color: str = 'blue', aspect_ratio: tuple = None,
+def st_cropper(img_file: Image, realtime_update: bool = True, default_coords: Optional[tuple] = None, box_color: str = 'blue', aspect_ratio: tuple = None,
                return_type: str = 'image', box_algorithm=None, key=None, should_resize_image: bool = True):
     """Create a new instance of "st_cropper".
 
@@ -77,6 +78,8 @@ def st_cropper(img_file: Image, realtime_update: bool = True, box_color: str = '
     realtime_update: bool
         A boolean value to determine whether the cropper will update in realtime.
         If set to False, a double click is required to crop the image.
+    default_coords: Optional[tuple]
+        The (xl, xr, yt, yb) coords to use by default
     box_color: string
         The color of the cropper's bounding box. Defaults to blue, can accept
         other string colors recognized by fabric.js or hex colors in a format like
@@ -114,6 +117,9 @@ def st_cropper(img_file: Image, realtime_update: bool = True, box_color: str = '
     if return_type.lower() not in supported_types:
         raise ValueError(f"{return_type} is not a supported value for return_type, try one of {supported_types}")
 
+    resized_ratio_w = 1
+    resized_ratio_h = 1
+
     # Load the image and resize to be no wider than the streamlit widget size
     if should_resize_image:
         resized_img = _resize_img(img_file)
@@ -121,11 +127,18 @@ def st_cropper(img_file: Image, realtime_update: bool = True, box_color: str = '
         resized_ratio_h = img_file.height / resized_img.height
         orig_file, img_file = img_file, resized_img
 
-    # Find a default box
-    if not box_algorithm:
-        box = _recommended_box(img_file, aspect_ratio=aspect_ratio)
+    if default_coords is not None:
+        box = {'left': default_coords[0] // resized_ratio_w,
+               'top': default_coords[2] // resized_ratio_h,
+               'width': (default_coords[1] - default_coords[0]) // resized_ratio_w,
+               'height': (default_coords[3] - default_coords[2]) // resized_ratio_h
+              }
     else:
-        box = box_algorithm(img_file, aspect_ratio=aspect_ratio)
+        # Find a default box
+        if not box_algorithm:
+            box = _recommended_box(img_file, aspect_ratio=aspect_ratio)
+        else:
+            box = box_algorithm(img_file, aspect_ratio=aspect_ratio)
 
     rect_left = box['left']
     rect_top = box['top']
