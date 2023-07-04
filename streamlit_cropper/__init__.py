@@ -65,6 +65,14 @@ def _recommended_box(img: Image, aspect_ratio: tuple = None) -> dict:
         height = box[3] - box[1]
     return {'left': int(left), 'top': int(top), 'width': int(width), 'height': int(height)}
 
+def _get_cropped_image(img_file, should_resize_image, orig_file, rect):
+    if not should_resize_image:
+        cropped_img = img_file.crop(
+                (rect['left'], rect['top'], rect['width'] + rect['left'], rect['height'] + rect['top']))
+    else:
+        cropped_img = orig_file.crop(
+                (rect['left'], rect['top'], rect['width'] + rect['left'], rect['height'] + rect['top']))
+    return cropped_img
 
 def st_cropper(img_file: Image, realtime_update: bool = True, box_color: str = 'blue', aspect_ratio: tuple = None,
                return_type: str = 'image', box_algorithm=None, key=None, should_resize_image: bool = True):
@@ -91,7 +99,8 @@ def st_cropper(img_file: Image, realtime_update: bool = True, box_color: str = '
     return_type: str
         The return type that you would like. The default, 'image', returns the cropped
         image, while 'box' returns a dictionary identifying the box by its
-        left and top coordinates as well as its width and height.
+        left and top coordinates as well as its width and height. Alternatively, 'both'
+        will return both the cropped image and box coordinates.
     key: str or None
         An optional key that uniquely identifies this component. If this is
         None, and the component's arguments are changed, the component will
@@ -107,10 +116,12 @@ def st_cropper(img_file: Image, realtime_update: bool = True, box_color: str = '
     The cropped image in PIL.Image format
     or
     Dict of box with coordinates
+    or 
+    The PIL.Image and coordinates
     """
 
     # Ensure that the return type is in the list of supported return types
-    supported_types = ('image', 'box')
+    supported_types = ('image', 'box', 'both')
     if return_type.lower() not in supported_types:
         raise ValueError(f"{return_type} is not a supported value for return_type, try one of {supported_types}")
 
@@ -169,17 +180,17 @@ def st_cropper(img_file: Image, realtime_update: bool = True, box_color: str = '
 
     # Return the value desired by the return_type
     if return_type.lower() == 'image':
-        if not should_resize_image:
-            cropped_img = img_file.crop(
-                (rect['left'], rect['top'], rect['width'] + rect['left'], rect['height'] + rect['top']))
-        else:
-            cropped_img = orig_file.crop(
-                (rect['left'], rect['top'], rect['width'] + rect['left'], rect['height'] + rect['top']))
+        cropped_img = _get_cropped_image(img_file, should_resize_image, orig_file, rect)
         return cropped_img
+    
     elif return_type.lower() == 'box':
         return rect
 
+    elif return_type.lower() == 'both':
+        cropped_img = _get_cropped_image(img_file, should_resize_image, orig_file, rect)
+        return cropped_img, rect
 
+    
 # Add some test code to play with the component while it's in development.
 # During development, we can run this just as we would any other Streamlit
 # app: `$ streamlit run my_component/__init__.py`
