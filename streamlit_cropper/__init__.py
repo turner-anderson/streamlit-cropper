@@ -65,7 +65,8 @@ def _recommended_box(img: Image, aspect_ratio: tuple = None) -> dict:
         height = box[3] - box[1]
     return {'left': int(left), 'top': int(top), 'width': int(width), 'height': int(height)}
 
-def _get_cropped_image(img_file, should_resize_image, orig_file, rect):
+def _get_cropped_image(img_file:Image, should_resize_image:bool, orig_file: Image, rect: dict):
+    # Return a cropped image.
     if not should_resize_image:
         cropped_img = img_file.crop(
                 (rect['left'], rect['top'], rect['width'] + rect['left'], rect['height'] + rect['top']))
@@ -117,7 +118,7 @@ def st_cropper(img_file: Image, realtime_update: bool = True, box_color: str = '
     or
     Dict of box with coordinates
     or 
-    The PIL.Image and coordinates
+    Both the PIL.Image and box coordinates
     """
 
     # Ensure that the return type is in the list of supported return types
@@ -186,11 +187,11 @@ def st_cropper(img_file: Image, realtime_update: bool = True, box_color: str = '
     elif return_type.lower() == 'box':
         return rect
 
-    elif return_type.lower() == 'both':
+    elif return_type.lower() == 'both': 
         cropped_img = _get_cropped_image(img_file, should_resize_image, orig_file, rect)
         return cropped_img, rect
 
-    
+
 # Add some test code to play with the component while it's in development.
 # During development, we can run this just as we would any other Streamlit
 # app: `$ streamlit run my_component/__init__.py`
