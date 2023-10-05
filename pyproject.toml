@@ -10,6 +10,11 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+dependencies = [
+    "streamlit >= 1.27.0",
+    "Pillow >= 9.2.0",
+    "numpy >= 1.23.5"
+]
 
 [project.urls]
 "Homepage" = "https://github.com/turner-anderson/streamlit-cropper"

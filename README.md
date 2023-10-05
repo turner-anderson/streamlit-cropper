@@ -2,7 +2,7 @@
 
 A streamlit custom component for easy image cropping
 
-![](./img/demo.gif)
+![](./demo.gif)
 
 ## Installation
 
