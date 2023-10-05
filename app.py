@@ -10,6 +10,7 @@ st.header("Cropper Demo")
 img_file = st.sidebar.file_uploader(label='Upload a file', type=['png', 'jpg'])
 realtime_update = st.sidebar.checkbox(label="Update in Real Time", value=True)
 box_color = st.sidebar.color_picker(label="Box Color", value='#0000FF')
+stroke_width = st.sidebar.number_input(label="Box Thickness", value=3, step=1)
 
 aspect_choice = st.sidebar.radio(label="Aspect Ratio", options=["1:1", "16:9", "4:3", "2:3", "Free"])
 aspect_dict = {
@@ -38,7 +39,8 @@ if img_file:
             realtime_update=realtime_update,
             box_color=box_color,
             aspect_ratio=aspect_ratio,
-            return_type=return_type
+            return_type=return_type,
+            stroke_width=stroke_width
         )
         raw_image = np.asarray(img).astype('uint8')
         left, top, width, height = tuple(map(int, rect.values()))
@@ -53,7 +55,8 @@ if img_file:
             realtime_update=realtime_update,
             box_color=box_color,
             aspect_ratio=aspect_ratio,
-            return_type=return_type
+            return_type=return_type,
+            stroke_width=stroke_width
         )
 
         # Manipulate cropped image at will

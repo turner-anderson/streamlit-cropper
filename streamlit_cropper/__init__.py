@@ -66,9 +66,18 @@ def _recommended_box(img: Image, aspect_ratio: tuple = None) -> dict:
         height = box[3] - box[1]
     return {'left': int(left), 'top': int(top), 'width': int(width), 'height': int(height)}
 
+def _get_cropped_image(img_file:Image, should_resize_image:bool, orig_file: Image, rect: dict):
+    # Return a cropped image.
+    if not should_resize_image:
+        cropped_img = img_file.crop(
+                (rect['left'], rect['top'], rect['width'] + rect['left'], rect['height'] + rect['top']))
+    else:
+        cropped_img = orig_file.crop(
+                (rect['left'], rect['top'], rect['width'] + rect['left'], rect['height'] + rect['top']))
+    return cropped_img
 
 def st_cropper(img_file: Image, realtime_update: bool = True, default_coords: Optional[tuple] = None, box_color: str = 'blue', aspect_ratio: tuple = None,
-               return_type: str = 'image', box_algorithm=None, key=None, should_resize_image: bool = True):
+               return_type: str = 'image', box_algorithm=None, key=None, should_resize_image: bool = True, stroke_width = 3):
     """Create a new instance of "st_cropper".
 
     Parameters
@@ -94,7 +103,8 @@ def st_cropper(img_file: Image, realtime_update: bool = True, default_coords: Op
     return_type: str
         The return type that you would like. The default, 'image', returns the cropped
         image, while 'box' returns a dictionary identifying the box by its
-        left and top coordinates as well as its width and height.
+        left and top coordinates as well as its width and height. Alternatively 'both'
+        will return both the cropped image and box coordinates
     key: str or None
         An optional key that uniquely identifies this component. If this is
         None, and the component's arguments are changed, the component will
@@ -103,6 +113,8 @@ def st_cropper(img_file: Image, realtime_update: bool = True, default_coords: Op
         A boolean to select whether the input image should be resized. As default the image
         will be resized to 700x700 pixel for streamlit display. Set to false when using
         custom box_algorithm.
+    stroke_width: int
+        The width of the bounding box
 
     Returns
     -------
@@ -110,10 +122,12 @@ def st_cropper(img_file: Image, realtime_update: bool = True, default_coords: Op
     The cropped image in PIL.Image format
     or
     Dict of box with coordinates
+    or
+    Tuple of PIL.Image and box coordinates
     """
 
     # Ensure that the return type is in the list of supported return types
-    supported_types = ('image', 'box')
+    supported_types = ('image', 'box', 'both')
     if return_type.lower() not in supported_types:
         raise ValueError(f"{return_type} is not a supported value for return_type, try one of {supported_types}")
 
@@ -163,7 +177,7 @@ def st_cropper(img_file: Image, realtime_update: bool = True, default_coords: Op
     # The _recommended_box function could be replaced with some kind of image
     # detection algorith if it suits your needs.
     component_value = _component_func(canvasWidth=canvas_width, canvasHeight=canvas_height,
-                                      realtimeUpdate=realtime_update,
+                                      realtimeUpdate=realtime_update, strokeWidth=stroke_width,
                                       rectHeight=rect_height, rectWidth=rect_width, rectLeft=rect_left, rectTop=rect_top,
                                       boxColor=box_color, imageData=image_data, lockAspect=not lock_aspect, key=key)
 
@@ -182,15 +196,11 @@ def st_cropper(img_file: Image, realtime_update: bool = True, default_coords: Op
 
     # Return the value desired by the return_type
     if return_type.lower() == 'image':
-        if not should_resize_image:
-            cropped_img = img_file.crop(
-                (rect['left'], rect['top'], rect['width'] + rect['left'], rect['height'] + rect['top']))
-        else:
-            cropped_img = orig_file.crop(
-                (rect['left'], rect['top'], rect['width'] + rect['left'], rect['height'] + rect['top']))
-        return cropped_img
+        return _get_cropped_image(img_file, should_resize_image, orig_file, rect)
     elif return_type.lower() == 'box':
         return rect
+    elif return_type.lower() == 'both':
+        return _get_cropped_image(img_file, should_resize_image, orig_file, rect), rect
 
 
 # Add some test code to play with the component while it's in development.
