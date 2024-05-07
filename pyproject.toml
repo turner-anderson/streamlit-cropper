@@ -1,7 +1,7 @@
 [project]
 name = "streamlit-cropper"
 version = "0.2.2"
-authors = [{name="Turner Anderson", email="andersontur11@gmail.com"}]
+authors = [{name="Turner Anderson", email="jhansirani91@gmail.com"}]
 description = "A simple image cropper for Streamlit"
 readme = "README.md"
 requires-python = ">=3.7"
