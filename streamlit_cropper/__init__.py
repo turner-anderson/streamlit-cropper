@@ -133,13 +133,13 @@ def st_cropper(img_file: Image, realtime_update: bool = True, default_coords: Op
 
     resized_ratio_w = 1
     resized_ratio_h = 1
+    orig_file = img_file.copy()
 
     # Load the image and resize to be no wider than the streamlit widget size
     if should_resize_image:
-        resized_img = _resize_img(img_file)
-        resized_ratio_w = img_file.width / resized_img.width
-        resized_ratio_h = img_file.height / resized_img.height
-        orig_file, img_file = img_file, resized_img
+        img_file = _resize_img(img_file)
+        resized_ratio_w = orig_file.width / img_file.width
+        resized_ratio_h = orig_file.height / img_file.height
 
     if default_coords is not None:
         box = {'left': default_coords[0] // resized_ratio_w,
