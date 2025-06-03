@@ -12,7 +12,7 @@ interface PythonArgs {
     realtimeUpdate: boolean
     boxColor: string
     strokeWidth: number
-    imageData: Uint8ClampedArray
+    imageData: string // base64 string
     lockAspect: boolean
 }
 
@@ -20,30 +20,8 @@ interface PythonArgs {
 const StreamlitCropper = (props: ComponentProps) => {
     const [canvas, setCanvas] = useState(new fabric.Canvas(""))
     const {canvasWidth, canvasHeight, imageData}: PythonArgs = props.args
-    /*
-    * Translate Python image data to a JavaScript Image
-    */
-    var invisCanvas = document.createElement("canvas")
-    var ctx = invisCanvas.getContext('2d')
-
-    invisCanvas.width = canvasWidth
-    invisCanvas.height = canvasHeight
-
-    // create imageData object
-    if (ctx) {
-    var idata = ctx.createImageData(canvasWidth, canvasHeight);
-
-    // set our buffer as source
-    idata.data.set(imageData);
-
-    // update canvas with new data
-    ctx.putImageData(idata, 0, 0);
-    var dataUri = invisCanvas.toDataURL()
-    }
-    else {
-        // eslint-disable-next-line
-        var dataUri = ""
-    }
+    // imageData is now a base64 string (data URL)
+    const dataUri = imageData || ""
     
     /**
      * Initialize canvas on mount and add a rectangle

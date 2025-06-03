@@ -16,8 +16,22 @@
  */
 
 // Safari doesn't support the EventTarget class, so we use a shim.
-import { EventTarget } from "event-target-shim"
-import { ArrowDataframeProto, ArrowTable } from "./ArrowTable"
+// Simple EventTarget polyfill for browser compatibility
+class SimpleEventTarget {
+  private listeners: { [type: string]: Function[] } = {}
+  addEventListener(type: string, callback: Function) {
+    if (!this.listeners[type]) this.listeners[type] = []
+    this.listeners[type].push(callback)
+  }
+  removeEventListener(type: string, callback: Function) {
+    if (!this.listeners[type]) return
+    this.listeners[type] = this.listeners[type].filter(fn => fn !== callback)
+  }
+  dispatchEvent(event: any) {
+    if (!this.listeners[event.type]) return
+    for (const fn of this.listeners[event.type]) fn(event)
+  }
+}
 
 /** Data sent in the custom Streamlit render event. */
 export interface RenderData {
@@ -58,7 +72,7 @@ export class Streamlit {
   public static readonly RENDER_EVENT = "streamlit:render"
 
   /** Dispatches events received from Streamlit. */
-  public static readonly events = new EventTarget()
+  public static readonly events = new SimpleEventTarget()
 
   private static registeredMessageListener = false
   private static lastFrameHeight?: number
@@ -144,17 +158,7 @@ export class Streamlit {
       args = {}
     }
 
-    // Parse our dataframe arguments with arrow, and merge them into our args dict
-    const dataframeArgs =
-      data["dfs"] && data["dfs"].length > 0
-        ? Streamlit.argsDataframeToObject(data["dfs"])
-        : {}
-
-    args = {
-      ...args,
-      ...dataframeArgs,
-    }
-
+    // No ArrowTable/dataframe parsing needed. args should contain imageData as base64 string.
     const disabled = Boolean(data["disabled"])
 
     // Dispatch a render event!
@@ -165,19 +169,7 @@ export class Streamlit {
     Streamlit.events.dispatchEvent(event)
   }
 
-  private static argsDataframeToObject = (
-    argsDataframe: ArgsDataframe[]
-  ): object => {
-    const argsDataframeArrow = argsDataframe.map(
-      ({ key, value }: ArgsDataframe) => [key, Streamlit.toArrowTable(value)]
-    )
-    return Object.fromEntries(argsDataframeArrow)
-  }
 
-  private static toArrowTable = (df: ArrowDataframeProto): ArrowTable => {
-    const { data, index, columns } = df.data
-    return new ArrowTable(data, index, columns)
-  }
 
   /** Post a message to the Streamlit app. */
   private static sendBackMsg = (type: string, data?: any): void => {
@@ -192,7 +184,4 @@ export class Streamlit {
   }
 }
 
-interface ArgsDataframe {
-  key: string
-  value: ArrowDataframeProto
-}
+

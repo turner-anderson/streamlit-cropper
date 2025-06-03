@@ -3,8 +3,6 @@ import numpy as np
 from streamlit_cropper import st_cropper
 from PIL import Image
 
-st.set_option('deprecation.showfileUploaderEncoding', False)
-
 # Upload an image and set some options for demo purposes
 st.header("Cropper Demo")
 img_file = st.sidebar.file_uploader(label='Upload a file', type=['png', 'jpg'])
