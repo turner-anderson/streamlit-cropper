@@ -1,6 +1,6 @@
 [project]
 name="streamlit-cropper"
-version="0.2.3"
+version="0.3.0"
 authors=[{name="Turner Anderson", email="andersontur11@gmail.com"}]
 description="A simple image cropper for Streamlit"
 readme="README.md"
