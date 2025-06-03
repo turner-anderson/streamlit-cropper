@@ -2,6 +2,7 @@ import streamlit as st
 import numpy as np
 from streamlit_cropper import st_cropper
 from PIL import Image
+from io import BytesIO
 
 # Upload an image and set some options for demo purposes
 st.header("Cropper Demo")
@@ -61,3 +62,14 @@ if img_file:
         st.write("Preview")
         _ = cropped_img.thumbnail((150, 150))
         st.image(cropped_img)
+
+        # Save the cropped image to a BytesIO buffer in PNG format
+        buf = BytesIO()
+        cropped_img.save(buf, format="PNG")
+        buf.seek(0)
+        st.download_button(
+            label="Download Cropped Image",
+            data=buf,
+            file_name="cropped_image.png",
+            mime="image/png"
+        )
