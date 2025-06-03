@@ -1,19 +1,19 @@
 [project]
 name = "streamlit-cropper"
-version = "0.2.2"
+version = "0.2.3"
 authors = [{name="Turner Anderson", email="andersontur11@gmail.com"}]
 description = "A simple image cropper for Streamlit"
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "streamlit >= 1.27.0",
-    "Pillow >= 9.2.0",
-    "numpy >= 1.23.5"
+    "streamlit",
+    "Pillow",
+    "numpy"
 ]
 
 [project.urls]
@@ -21,9 +21,40 @@ dependencies = [
 "Bug Tracker" = "https://github.com/turner-anderson/streamlit-cropper/issues"
 
 [build-system]
-requires = ["setuptools>=61.0",
-            "streamlit >= 1.27.0",
-            "Pillow >= 9.2.0",
-            "numpy >= 1.23.5"
+requires = ["hatchling>=1.27.0"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
 ]
-build-backend = "setuptools.build_meta"
+
+# Same as Black.
+line-length = 120
+indent-width = 4
