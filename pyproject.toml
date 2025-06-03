@@ -1,6 +1,6 @@
 [project]
 name="streamlit-cropper"
-version="0.3.0"
+version="0.3.0a"
 authors=[{name="Turner Anderson", email="andersontur11@gmail.com"}]
 description="A simple image cropper for Streamlit"
 readme="README.md"
@@ -21,13 +21,8 @@ dependencies = [
 "Bug Tracker" = "https://github.com/turner-anderson/streamlit-cropper/issues"
 
 [build-system]
-requires = ["hatchling>=1.26"]
-build-backend = "hatchling.build"
-
-[tool.hatch.build]
-include = [
-    "streamlit_cropper/frontend/build/**",
-]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
 
 [tool.ruff]
 exclude = [
