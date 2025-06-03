@@ -3,6 +3,8 @@ import streamlit.components.v1 as components
 from PIL import Image
 from typing import Optional
 import numpy as np
+import io
+import base64
 
 _RELEASE = True
 
@@ -168,7 +170,6 @@ def st_cropper(img_file: Image, realtime_update: bool = True, default_coords: Op
 
 
     # Convert image to base64 string for passing to Javascript
-    import io, base64
     buffered = io.BytesIO()
     img_file.convert("RGBA").save(buffered, format="PNG")
     image_data = "data:image/png;base64," + base64.b64encode(buffered.getvalue()).decode()
@@ -183,7 +184,7 @@ def st_cropper(img_file: Image, realtime_update: bool = True, default_coords: Op
     component_value = _component_func(canvasWidth=canvas_width, canvasHeight=canvas_height,
                                       realtimeUpdate=realtime_update, strokeWidth=stroke_width,
                                       rectHeight=rect_height, rectWidth=rect_width, rectLeft=rect_left, rectTop=rect_top,
-                                      boxColor=box_color, imageData=image_data, lockAspect=not lock_aspect, key=key)
+                                      boxColor=box_color, imageData=image_data, lockAspect=lock_aspect, key=key)
 
     # Return a cropped image using the box from the frontend
     if component_value:
@@ -213,7 +214,6 @@ def st_cropper(img_file: Image, realtime_update: bool = True, default_coords: Op
 if not _RELEASE:
     import streamlit as st
 
-    st.set_option('deprecation.showfileUploaderEncoding', False)
     # Upload an image and set some options for demo purposes
     st.header("Cropper Testing")
     img_file = st.sidebar.file_uploader(label='Upload a file', type=['png', 'jpg'])

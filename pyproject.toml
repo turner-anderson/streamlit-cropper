@@ -1,10 +1,10 @@
 [project]
-name = "streamlit-cropper"
-version = "0.2.3"
-authors = [{name="Turner Anderson", email="andersontur11@gmail.com"}]
-description = "A simple image cropper for Streamlit"
-readme = "README.md"
-requires-python = ">=3.10"
+name="streamlit-cropper"
+version="0.2.3"
+authors=[{name="Turner Anderson", email="andersontur11@gmail.com"}]
+description="A simple image cropper for Streamlit"
+readme="README.md"
+requires-python=">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -21,11 +21,10 @@ dependencies = [
 "Bug Tracker" = "https://github.com/turner-anderson/streamlit-cropper/issues"
 
 [build-system]
-requires = ["hatchling>=1.27.0"]
+requires = ["hatchling>=1.26"]
 build-backend = "hatchling.build"
 
 [tool.ruff]
-# Exclude a variety of commonly ignored directories.
 exclude = [
     ".bzr",
     ".direnv",
@@ -54,7 +53,5 @@ exclude = [
     "site-packages",
     "venv",
 ]
-
-# Same as Black.
 line-length = 120
 indent-width = 4
