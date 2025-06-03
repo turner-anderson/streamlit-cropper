@@ -79,7 +79,7 @@ def _get_cropped_image(img_file:Image, should_resize_image:bool, orig_file: Imag
     return cropped_img
 
 def st_cropper(img_file: Image, realtime_update: bool = True, default_coords: Optional[tuple] = None, box_color: str = 'blue', aspect_ratio: tuple = None,
-               return_type: str = 'image', box_algorithm=None, key=None, should_resize_image: bool = True, stroke_width = 3):
+               return_type: str = 'image', box_algorithm=None, key=None, should_resize_image: bool = True, stroke_width = 3) -> Image.Image | dict | tuple[Image.Image, dict]:
     """Create a new instance of "st_cropper".
 
     Parameters

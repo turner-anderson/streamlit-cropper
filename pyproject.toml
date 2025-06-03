@@ -24,6 +24,11 @@ dependencies = [
 requires = ["hatchling>=1.26"]
 build-backend = "hatchling.build"
 
+[tool.hatch.build]
+include = [
+    "streamlit_cropper/frontend/build/**",
+]
+
 [tool.ruff]
 exclude = [
     ".bzr",
