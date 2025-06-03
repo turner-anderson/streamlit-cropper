@@ -28,5 +28,8 @@ MANIFEST
 node_modules/
 build/
 
+# Ruff
+.ruff_cache/
+
 # Environments
 venv/
