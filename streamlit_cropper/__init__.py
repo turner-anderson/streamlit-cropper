@@ -166,8 +166,12 @@ def st_cropper(img_file: Image, realtime_update: bool = True, default_coords: Op
     if aspect_ratio:
         lock_aspect = True
 
-    # Translates image to a list for passing to Javascript
-    image_data = np.array(img_file.convert("RGBA")).flatten().tolist()
+
+    # Convert image to base64 string for passing to Javascript
+    import io, base64
+    buffered = io.BytesIO()
+    img_file.convert("RGBA").save(buffered, format="PNG")
+    image_data = "data:image/png;base64," + base64.b64encode(buffered.getvalue()).decode()
 
     # Call through to our private component function. Arguments we pass here
     # will be sent to the frontend, where they'll be available in an "args"
